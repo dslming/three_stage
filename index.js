@@ -3,7 +3,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import Stats from 'three/examples/jsm/libs/stats.module.js'
 
 export default class Stage {
-  constructor(container) {
+  constructor(container, param) {
     this.fuArr = []
     this.viceCamera = null
     this.tmpTarget = new THREE.Vector3()
@@ -50,7 +50,11 @@ export default class Stage {
     this._loop = this._loop.bind(this)
     window.addEventListener("resize", this.handleResize);
     this.handleResize();
-    this.initControls();
+    if (param && param.disableControl) {
+
+    } else {
+      this.initControls();
+    }
     this.camera.position.set(0, 0, 50)
 
     let axis = new THREE.AxesHelper(10000);
