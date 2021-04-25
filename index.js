@@ -22,7 +22,7 @@ export default class Stage {
     this.scene.add(ambient);
 
     let dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
-    dirLight.position.set(100,100,100);
+    dirLight.position.set(100, 100, 100);
     dirLight.name = "dirLight";
     this.scene.add(dirLight);
 
@@ -61,12 +61,14 @@ export default class Stage {
     this.scene.add(axis);
 
     this.stats = new Stats();
-		this.stats.domElement.style.position = 'absolute';
-		this.stats.domElement.style.left = '0px';
-		this.stats.domElement.style.top = '0px';
-		this.stats.domElement.style.width = '100px';
-		this.stats.domElement.id = 'stats';
-		this.containerEle.appendChild(this.stats.dom);
+    this.stats.domElement.style.position = 'absolute';
+    this.stats.domElement.style.left = '0px';
+    this.stats.domElement.style.top = '0px';
+    this.stats.domElement.style.width = '100px';
+    this.stats.domElement.id = 'stats';
+    this.containerEle.appendChild(this.stats.dom);
+
+    this.state = true
   }
 
   initControls() {
@@ -110,6 +112,10 @@ export default class Stage {
   addViceCamera(viceCamera) {
     this.viceCamera = viceCamera
   }
+
+  setRender(v) {
+    this.state = v
+  }
   onUpdate(fu) {
     this.fuArr.push(fu)
   }
@@ -118,7 +124,7 @@ export default class Stage {
     this.stats.update()
     this.camera.updateProjectionMatrix();
     this.camera.updateMatrixWorld()
-    this.renderer.render(this.scene, this.camera);
+    this.state && this.renderer.render(this.scene, this.camera);
 
     this.fuArr.forEach(fun => {
       fun()
@@ -127,4 +133,3 @@ export default class Stage {
     requestAnimationFrame(this._loop)
   }
 }
-
