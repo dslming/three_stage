@@ -1,7 +1,7 @@
 ### three_stage
 three.js 基本场景搭建。
 
-node 地址: https://www.npmjs.com/package/three_stage
+npm 地址: https://www.npmjs.com/package/three_stage
 
 demo:
 ```js

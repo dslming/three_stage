@@ -15,7 +15,7 @@ module.exports = {
     port: 8888,
     open: false,
     compress: false,
-    contentBase: path.join(__dirname,"./")
+    contentBase: path.join(__dirname, "./example")
   },
   plugins: [
     new WebpackBar(),

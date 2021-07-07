@@ -43,8 +43,8 @@ class App {
     cube.name = "test_cube"
     this.stage.scene.add(cube)
     this.stage.onUpdate(() => {
-      cube.rotation.x += this.options.speed || 0
-      cube.rotation.y += this.options.speed || 0
+      // cube.rotation.x += this.options.speed || 0
+      // cube.rotation.y += this.options.speed || 0
     })
   }
 }

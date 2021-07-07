@@ -1,0 +1,301 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  font-size: 14px;
+  font-family: "Microsoft YaHei", 寰蒋闆呴粦, "MicrosoftJhengHei", 鍗庢枃缁嗛粦, STHeiti, MingLiu
+}
+
+ul li {
+  list-style: none;
+}
+
+#fengMap {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  overflow: hidden;
+  touch-action: none;
+  -ms-touch-action: none;
+}
+
+/* 淇℃伅绐楅摼鎺ュ唴瀹� */
+a {
+  color: #337ab7;
+  text-decoration: none;
+}
+
+/* 鎸夐挳缁勬牱寮� */
+.btnsGroup {
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+  display: none;
+}
+
+.btnsGroup button {
+  cursor: pointer;
+  padding: 8px;
+}
+
+.btnsGroup button.active {
+  background-color: #3385ff;
+  border: none;
+  color: #fff;
+}
+
+/* 鏀惧ぇ缂╁皬鎻愮ず淇℃伅 */
+.message {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  padding: 15px;
+  color: #8a6d3b;
+  background-color: #fcf8e3;
+  border-color: #faebcc;
+  display: none;
+}
+
+.message.active {
+  display: block;
+}
+
+/* 鑷畾涔夊伐鍏锋帶浠� */
+.btnsFloor {
+  width: 40px;
+  position: absolute;
+  right: 20px;
+  top: 76px;
+  display: none;
+  -moz-box-shadow: 10px 10px 5px #888888;
+  /* 鑰佺殑 Firefox */
+  box-shadow: 2px 2px 2px #888888;
+  background-color: #fff;
+}
+
+.btnsFloor span {
+  display: block;
+  width: 100%;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  cursor: pointer;
+  background: url('../images/layer.png') no-repeat center;
+  background-size: 80% 80%;
+}
+
+.btnsFloor span.multi {
+  background: url('../images/layers.png') no-repeat center;
+  background-size: 60% 60%;
+}
+
+.btnsFloor ul {
+  width: 100%;
+}
+
+.btnsFloor ul li {
+  width: 100%;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+}
+
+.btnsFloor ul li.active {
+  color: #fff;
+  background-color: #1e82fa;
+  border-bottom: 1px solid #1e82fa;
+}
+
+.btnsSwitch {
+  width: 40px;
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  display: none;
+  -moz-box-shadow: 10px 10px 5px #888888;
+  /* 鑰佺殑 Firefox */
+  box-shadow: 2px 2px 2px #888888;
+  background-color: #fff;
+}
+
+.btnsSwitch span {
+  display: block;
+  width: 100%;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  cursor: pointer;
+  background: url('../images/3D.png') center center no-repeat;
+}
+
+.btnsSwitch span.planar {
+  background: url('../images/2D.png') center center no-repeat;
+}
+
+/* domMarker demo start */
+/* 鎶ヨmarker */
+.domContainer {
+  width: 100%;
+  height: 100%;
+}
+
+.domContainer canvas {
+  display: block;
+  position: absolute;
+  left: 0;
+  top: -9px;
+}
+
+/* 淇濇寔澶у皬涓嶅彉鐨勫皬鍦嗗湀  */
+.dot {
+  width: 100%;
+  height: 100%;
+  background: url(../images/01.gif) no-repeat;
+  background-size: 100%;
+  z-index: 200;
+}
+
+
+/* 浜х敓鍔ㄧ敾锛堝悜澶栨墿鏁ｅ彉澶э級鐨勫渾鍦�  */
+.pulse,
+.pulse-big {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border: 2px solid #EF2D02;
+  background: rgba(239, 45, 2, 0.8);
+  border-radius: 50%;
+  z-index: 100;
+  opacity: 0;
+  top: -45px;
+  left: -45px;
+}
+
+.pulse {
+  background: rgba(239, 45, 2, 0.6) !important;
+  -webkit-animation: warn 0.9s ease-out;
+  -moz-animation: warn 0.9s ease-out;
+  animation: warn 0.9s ease-out;
+  -webkit-animation-iteration-count: infinite;
+  -moz-animation-iteration-count: infinite;
+  animation-iteration-count: infinite;
+  box-shadow: 1px 1px 30px #EF2D02;
+}
+
+.pulse-big {
+  background: rgba(239, 45, 2, 0.6) !important;
+  -webkit-animation: warn1 0.9s ease-out;
+  -moz-animation: warn1 0.9s ease-out;
+  animation: warn1 0.9s ease-out;
+  -webkit-animation-iteration-count: infinite;
+  -moz-animation-iteration-count: infinite;
+  animation-iteration-count: infinite;
+  box-shadow: 1px 1px 30px #EF2D02;
+}
+
+@keyframes warn {
+  0% {
+    -moz-transform: scale(0);
+    transform: scale(0);
+    opacity: 1;
+  }
+
+  100% {
+    -moz-transform: scale(1);
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes warn1 {
+  0% {
+    -o-transform: scale(0);
+    transform: scale(0);
+    opacity: 1;
+  }
+
+  100% {
+    -o-transform: scale(0.6);
+    transform: scale(0.6);
+    opacity: 0;
+  }
+}
+
+/* video dom */
+
+.videoDom,
+.videoDom::before,
+.videoDom::after {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.videoDom {
+  width: 200px;
+  height: 100px;
+  margin: auto;
+  /* background: url("../images/Button-White-Large.png") no-repeat 50%/70% rgba(0, 0, 0, 0.1); */
+  color: #3385FF;
+  box-shadow: inset 0 0 0 2px rgba(51, 133, 255, 0.8);
+  line-height: 100px;
+}
+
+
+
+.videoDom::before,
+.videoDom::after {
+  content: '';
+  z-index: -1;
+  margin: -5%;
+  box-shadow: inset 0 0 0 2px;
+  animation: clipMe 8s linear infinite;
+}
+
+.videoDom::before {
+  animation-delay: -4s;
+}
+
+.videoDom:hover::after,
+.videoDom:hover::before {
+  background-color: rgba(255, 0, 0, 0.3);
+}
+
+video {
+  object-fit: fill;
+  width: 100%;
+  height: auto;
+  vertical-align: middle;
+}
+
+@keyframes clipMe {
+
+  0%,
+  100% {
+    clip: rect(0px, 250.0px, 0px, 0px);
+  }
+
+  25% {
+    clip: rect(0px, 2px, 250.0px, 0px);
+  }
+
+  50% {
+    clip: rect(230.0px, 250.0px, 250.0px, 0px);
+  }
+
+  75% {
+    clip: rect(0px, 250.0px, 250.0px, 230.0px);
+  }
+}
+
+/* domMarker demo end */

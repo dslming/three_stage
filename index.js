@@ -1,5 +1,6 @@
 import * as THREE from 'three'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+// import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import OrbitControls from './camera-control/MyOrbitControls'
 import Stats from 'three/examples/jsm/libs/stats.module.js'
 
 export default class Stage {
@@ -38,8 +39,10 @@ export default class Stage {
     });
     this.renderer.setClearColor(0x33334c, 1.0);
     // this.renderer.autoClear = true;
-    this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.setSize(vW, vH, false);
+    // this.renderer.setPixelRatio(window.devicePixelRatio);
+    console.error(vW, vH);
+
     this.containerEle.appendChild(this.renderer.domElement);
     this.camera = new THREE.PerspectiveCamera(45, 1, 0.01, 1000)
 
