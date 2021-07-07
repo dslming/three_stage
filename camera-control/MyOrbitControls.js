@@ -168,13 +168,16 @@ export default class MyOrbitControls {
         switch (this.touches.ONE) {
           case TOUCH.ROTATE:
             this.handleTouchStartRotate(event);
+            this.state = STATE.TOUCH_ROTATE;
             break;
           case TOUCH.PAN:
             if (this.enablePan === false) return;
             this.handleTouchStartPan(event);
+            this.state = STATE.TOUCH_DOLLY_PAN;
             break;
 
           default:
+            this.state = STATE.NONE;
         }
         break;
 
@@ -201,9 +204,52 @@ export default class MyOrbitControls {
     // no-op
   }
 
+  handleTouchMoveRotate(event) {
+    if (event.touches.length == 1) {
+      this.rotation.setRotateEnd(event.touches[0].pageX, event.touches[0].pageY);
+    } else {
+      var x = 0.5 * (event.touches[0].pageX + event.touches[1].pageX);
+      var y = 0.5 * (event.touches[0].pageY + event.touches[1].pageY);
+      this.rotation.setRotateEnd(x, y);
+    }
+
+    // rotateDelta.subVectors(rotateEnd, rotateStart).multiplyScalar(scope.rotateSpeed);
+    // var element = scope.domElement;
+    // rotateLeft(2 * Math.PI * rotateDelta.x / element.clientHeight); // yes, height
+    // rotateUp(2 * Math.PI * rotateDelta.y / element.clientHeight);
+    // rotateStart.copy(rotateEnd);
+  }
+
   onTouchMove(event) {
     event.preventDefault(); // prevent scrolling
     event.stopPropagation();
+
+    	switch (this.state) {
+    	  case STATE.TOUCH_ROTATE:
+    	    if (this.enableRotate === false) return;
+    	    this.handleTouchMoveRotate(event);
+    	    this.update();
+    	    break;
+
+    	  case STATE.TOUCH_PAN:
+    	    if (this.enablePan === false) return;
+    	    handleTouchMovePan(event);
+    	    this.update();
+    	    break;
+
+    	  case STATE.TOUCH_DOLLY_PAN:
+    	    handleTouchMoveDollyPan(event);
+    	    this.update();
+    	    break;
+
+    	  case STATE.TOUCH_DOLLY_ROTATE:
+    	    handleTouchMoveDollyRotate(event);
+    	    this.update();
+    	    break;
+
+    	  default:
+    	    this.state = STATE.NONE;
+    	}
   }
 
   update() {
