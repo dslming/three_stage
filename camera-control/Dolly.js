@@ -3,14 +3,29 @@ import * as THREE from 'three'
 /**
  * 缩放控制
  */
-export default class Dolly {
+export class Dolly {
   constructor(param) {
     this.param = param
     this.zoomSpeed = 1
     this.scale = 1
+
+    this.dollyStart = new THREE.Vector2();
+    this.dollyEnd = new THREE.Vector2();
   }
 
-  handle(deltaY) {
+   setDollyStartForMobile(x, y) {
+     this.dollyStart.set(x, y)
+   }
+
+  setDollyEndForMobile(x, y) {
+    const dollyDelta = new THREE.Vector2();
+     this.dollyEnd.set(x, y)
+    dollyDelta.set(0, Math.pow(this.dollyEnd.y / this.dollyStart.y, this.zoomSpeed));
+    this.dollyOut(dollyDelta.y);
+    this.dollyStart.set(x,y)
+   }
+
+  handlePC(deltaY) {
     if (deltaY > 0) {
       this.dollyOut(this.getZoomScale())
     } else {
@@ -18,6 +33,7 @@ export default class Dolly {
     }
     this.update()
   }
+
   dollyOut(dollyScale) {
     this.scale /= dollyScale
   }

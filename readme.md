@@ -58,4 +58,6 @@ window.onload = () => {
 ```
 
 
-Kmu4kVZj+sWTZVVENJ/0j7mJ5UA=
+npm config set registry http://registry.npm.taobao.org
+npm config set registry https://registry.npmjs.org;
+webpack-dev-server --config webpack.dev.js --inline --host 192.168.100.134 --progress

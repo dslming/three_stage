@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import Rotation from './Rotation.js'
 import Pan from './Pan.js'
-import Dolly from './Dolly.js'
+import { Dolly } from './Dolly.js'
 import { MOUSE, TOUCH, STATE } from './constants'
 
 export default class MyOrbitControls {
@@ -18,7 +18,7 @@ export default class MyOrbitControls {
       RIGHT: MOUSE.PAN
     };
     this.touches = {
-      ONE: TOUCH.ROTATE,
+      ONE: TOUCH.PAN,
       TWO: TOUCH.DOLLY_PAN
     };
 
@@ -80,32 +80,38 @@ export default class MyOrbitControls {
     this.domElement.ownerDocument.removeEventListener('pointermove', this.onPointerMove);
     this.domElement.removeEventListener('contextmenu', this.onContextMenu);
     this.domElement.removeEventListener('wheel', this.onWheel);
+
+     this.domElement.removeEventListener('touchstart', this.onTouchStart);
+     this.domElement.removeEventListener('touchend', this.onTouchEnd);
+     this.domElement.removeEventListener('touchmove', this.onTouchMove);
   }
 
   onWheel(event) {
     const { deltaY } = event
-    this.dolly.handle(deltaY)
+    this.dolly.handlePC(deltaY)
   }
+
   onContextMenu(event) {
     event.preventDefault();
   }
+
   onPointerMove(event) {
-    if (this.state != "down") return
+    if (this.state == STATE.NONE) return
     const mouse = { x: event.clientX, y: event.clientY }
 
     switch (this.state) {
-      case THREE.MOUSE.ROTATE:
+      case MOUSE.ROTATE:
         this.rotation.setRotateEnd(mouse.x, mouse.y)
         break;
 
-      case THREE.MOUSE.PAN:
+      case MOUSE.PAN:
         this.pan.setPanEnd(mouse.x, mouse.y)
         break
     }
   }
 
   onPointerUp() {
-    this.state = "up"
+    this.state = STATE.NONE
   }
 
   onPointerDown(event) {
@@ -114,8 +120,6 @@ export default class MyOrbitControls {
     if (!allowEvent.includes(event.pointerType)) {
       return
     }
-
-    this.state = "down"
 
     event.preventDefault();
     let mouseAction = STATE.NONE
@@ -140,13 +144,16 @@ export default class MyOrbitControls {
     switch (mouseAction) {
       case MOUSE.ROTATE:
         this.rotation.setRotateStart(mouse.x, mouse.y)
+        this.state = STATE.ROTATE
         break;
 
       case MOUSE.PAN:
         this.pan.setPanStart(mouse.x, mouse.y)
+        this.state = STATE.PAN
         break;
 
       default:
+        this.state = STATE.NONE
         break;
     }
   }
@@ -161,10 +168,52 @@ export default class MyOrbitControls {
     }
   }
 
+  handleTouchStartPan(event) {
+    if (event.touches.length == 1) {
+     this.pan.setPanStart(event.touches[0].pageX, event.touches[0].pageY);
+    } else {
+      var x = 0.5 * (event.touches[0].pageX + event.touches[1].pageX);
+      var y = 0.5 * (event.touches[0].pageY + event.touches[1].pageY);
+     this.pan.setPanStart(x, y);
+    }
+  }
+
+  handleTouchStartDolly(event) {
+    	var dx = event.touches[0].pageX - event.touches[1].pageX;
+    	var dy = event.touches[0].pageY - event.touches[1].pageY;
+    var distance = Math.sqrt(dx * dx + dy * dy);
+    	this.dolly.setDollyStartForMobile(0, distance);
+  }
+
+  handleTouchMoveDolly(event) {
+    var dx = event.touches[0].pageX - event.touches[1].pageX;
+    var dy = event.touches[0].pageY - event.touches[1].pageY;
+    var distance = Math.sqrt(dx * dx + dy * dy);
+    this.dolly.setDollyEndForMobile(0, distance);
+  }
+
+  handleTouchMoveDollyPan(event) {
+    this.handleTouchMoveDolly(event);
+  }
+
+  handleTouchStartDollyPan(event) {
+    this.handleTouchStartDolly(event);
+  }
+
+  handleTouchStartDollyRotate(event) {
+    this.handleTouchStartDolly(event)
+  }
+  handleTouchMoveDollyRotate(event) {
+    this.handleTouchMoveDolly(event)
+  }
+
   onTouchStart(event) {
+
     event.preventDefault(); // prevent scrolling
     switch (event.touches.length) {
       case 1:
+    console.error("touch start 1");
+
         switch (this.touches.ONE) {
           case TOUCH.ROTATE:
             this.handleTouchStartRotate(event);
@@ -173,7 +222,7 @@ export default class MyOrbitControls {
           case TOUCH.PAN:
             if (this.enablePan === false) return;
             this.handleTouchStartPan(event);
-            this.state = STATE.TOUCH_DOLLY_PAN;
+            this.state = STATE.PAN;
             break;
 
           default:
@@ -182,13 +231,17 @@ export default class MyOrbitControls {
         break;
 
       case 2:
+    console.error("touch start 2");
+
         switch (this.touches.TWO) {
           case TOUCH.DOLLY_PAN:
             this.handleTouchStartDollyPan(event);
+            this.state = STATE.TOUCH_DOLLY_PAN;
             break;
 
           case TOUCH.DOLLY_ROTATE:
             this.handleTouchStartDollyRotate(event);
+            this.state = STATE.TOUCH_DOLLY_ROTATE;
             break;
 
           default:
@@ -212,12 +265,6 @@ export default class MyOrbitControls {
       var y = 0.5 * (event.touches[0].pageY + event.touches[1].pageY);
       this.rotation.setRotateEnd(x, y);
     }
-
-    // rotateDelta.subVectors(rotateEnd, rotateStart).multiplyScalar(scope.rotateSpeed);
-    // var element = scope.domElement;
-    // rotateLeft(2 * Math.PI * rotateDelta.x / element.clientHeight); // yes, height
-    // rotateUp(2 * Math.PI * rotateDelta.y / element.clientHeight);
-    // rotateStart.copy(rotateEnd);
   }
 
   onTouchMove(event) {
@@ -238,7 +285,7 @@ export default class MyOrbitControls {
     	    break;
 
     	  case STATE.TOUCH_DOLLY_PAN:
-    	    handleTouchMoveDollyPan(event);
+    	    this.handleTouchMoveDollyPan(event);
     	    this.update();
     	    break;
 
