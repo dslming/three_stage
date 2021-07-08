@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import Rotation from './Rotation.js'
+import { Rotation, RotateLeftType } from './Rotation.js'
 import Pan from './Pan.js'
 import { Dolly } from './Dolly.js'
 import { MOUSE, TOUCH, STATE } from './constants'
@@ -18,10 +18,9 @@ export default class MyOrbitControls {
       RIGHT: MOUSE.PAN
     };
     this.touches = {
-      ONE: TOUCH.PAN,
-      TWO: TOUCH.DOLLY_PAN
+      ONE: TOUCH.ROTATE, // 一个手指只能 PAN 或者 ROTATE
+      TWO: TOUCH.DOLLY_ROTATE // 两个手指多了缩放
     };
-
     this.pan = new Pan({
       camera: this.camera,
       target: this.target,
@@ -101,7 +100,8 @@ export default class MyOrbitControls {
 
     switch (this.state) {
       case MOUSE.ROTATE:
-        this.rotation.setRotateEnd(mouse.x, mouse.y)
+        this.rotation.setRotateUpEnd(mouse.x, mouse.y)
+        this.rotation.setRotateLeftEnd(mouse.x, mouse.y)
         break;
 
       case MOUSE.PAN:
@@ -143,7 +143,9 @@ export default class MyOrbitControls {
     const mouse = { x: event.clientX, y: event.clientY }
     switch (mouseAction) {
       case MOUSE.ROTATE:
-        this.rotation.setRotateStart(mouse.x, mouse.y)
+        this.rotation.setRotateLeftType(RotateLeftType.OFFSET)
+        this.rotation.setRotateUpStart(mouse.x, mouse.y)
+        this.rotation.setRotateLeftStart(mouse.x, mouse.y)
         this.state = STATE.ROTATE
         break;
 
@@ -160,11 +162,18 @@ export default class MyOrbitControls {
 
   handleTouchStartRotate(event) {
     if (event.touches.length == 1) {
-      this.rotation.setRotateStart(event.touches[0].pageX, event.touches[0].pageY);
+      const x = event.touches[0].pageX
+      const y = event.touches[0].pageY
+      this.rotation.setRotateUpStart(x, y);
+      this.rotation.setRotateLeftStart(x, y);
     } else {
       var x = 0.5 * (event.touches[0].pageX + event.touches[1].pageX);
       var y = 0.5 * (event.touches[0].pageY + event.touches[1].pageY);
-      this.rotation.setRotateStart(x, y);
+      this.rotation.setRotateUpStart(x, y);
+
+      var dlx = event.touches[0].pageX - event.touches[1].pageX;
+      var dly = event.touches[0].pageY - event.touches[1].pageY;
+      this.rotation.setRotateLeftStart(dlx, dly);
     }
   }
 
@@ -194,17 +203,21 @@ export default class MyOrbitControls {
 
   handleTouchMoveDollyPan(event) {
     this.handleTouchMoveDolly(event);
+    this.handleTouchMovePan(event);
   }
 
   handleTouchStartDollyPan(event) {
     this.handleTouchStartDolly(event);
+    this.handleTouchStartPan(event)
   }
 
   handleTouchStartDollyRotate(event) {
     this.handleTouchStartDolly(event)
+    this.handleTouchStartRotate(event)
   }
   handleTouchMoveDollyRotate(event) {
     this.handleTouchMoveDolly(event)
+    this.handleTouchMoveRotate(event)
   }
 
   onTouchStart(event) {
@@ -212,17 +225,16 @@ export default class MyOrbitControls {
     event.preventDefault(); // prevent scrolling
     switch (event.touches.length) {
       case 1:
-    console.error("touch start 1");
-
         switch (this.touches.ONE) {
           case TOUCH.ROTATE:
+            this.rotation.setRotateLeftType(RotateLeftType.OFFSET)
             this.handleTouchStartRotate(event);
             this.state = STATE.TOUCH_ROTATE;
             break;
           case TOUCH.PAN:
             if (this.enablePan === false) return;
             this.handleTouchStartPan(event);
-            this.state = STATE.PAN;
+            this.state = STATE.TOUCH_PAN;
             break;
 
           default:
@@ -231,8 +243,6 @@ export default class MyOrbitControls {
         break;
 
       case 2:
-    console.error("touch start 2");
-
         switch (this.touches.TWO) {
           case TOUCH.DOLLY_PAN:
             this.handleTouchStartDollyPan(event);
@@ -240,16 +250,18 @@ export default class MyOrbitControls {
             break;
 
           case TOUCH.DOLLY_ROTATE:
+            this.rotation.setRotateLeftType(RotateLeftType.ANGLE)
             this.handleTouchStartDollyRotate(event);
             this.state = STATE.TOUCH_DOLLY_ROTATE;
             break;
 
           default:
         }
-
         break;
 
       default:
+        this.state = STATE.NONE
+        break
     }
   }
 
@@ -259,12 +271,30 @@ export default class MyOrbitControls {
 
   handleTouchMoveRotate(event) {
     if (event.touches.length == 1) {
-      this.rotation.setRotateEnd(event.touches[0].pageX, event.touches[0].pageY);
+      const x = event.touches[0].pageX
+      const y = event.touches[0].pageY
+      this.rotation.setRotateUpEnd(x, y);
+      this.rotation.setRotateLeftEnd(x, y);
     } else {
       var x = 0.5 * (event.touches[0].pageX + event.touches[1].pageX);
       var y = 0.5 * (event.touches[0].pageY + event.touches[1].pageY);
-      this.rotation.setRotateEnd(x, y);
+      this.rotation.setRotateUpEnd(x, y);
+
+      var dlx = event.touches[0].pageX - event.touches[1].pageX;
+      var dly = event.touches[0].pageY - event.touches[1].pageY;
+
+      this.rotation.setRotateLeftEnd(dlx, dly);
     }
+  }
+
+  handleTouchMovePan(event) {
+		if (event.touches.length == 1) {
+		  this.pan.setPanEnd(event.touches[0].pageX, event.touches[0].pageY);
+		} else {
+		  var x = 0.5 * (event.touches[0].pageX + event.touches[1].pageX);
+		  var y = 0.5 * (event.touches[0].pageY + event.touches[1].pageY);
+		  this.pan.setPanEnd(x, y);
+		}
   }
 
   onTouchMove(event) {
@@ -279,8 +309,7 @@ export default class MyOrbitControls {
     	    break;
 
     	  case STATE.TOUCH_PAN:
-    	    if (this.enablePan === false) return;
-    	    handleTouchMovePan(event);
+    	    this.handleTouchMovePan(event);
     	    this.update();
     	    break;
 
@@ -290,7 +319,7 @@ export default class MyOrbitControls {
     	    break;
 
     	  case STATE.TOUCH_DOLLY_ROTATE:
-    	    handleTouchMoveDollyRotate(event);
+    	    this.handleTouchMoveDollyRotate(event);
     	    this.update();
     	    break;
 

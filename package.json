@@ -4,7 +4,7 @@
   "description": "three.js 基本场景搭建。",
   "main": "index.js",
   "scripts": {
-    "dev": "webpack-dev-server --config webpack.dev.js  --progress"
+    "dev": "webpack-dev-server --config webpack.dev.js --inline --host 192.168.100.134 --progress"
   },
   "repository": {
     "type": "git",

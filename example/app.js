@@ -1,7 +1,8 @@
 import Stage from '../index.js'
 import * as THREE from 'three'
 import * as dat from "dat.gui";
-
+import VConsole from 'vconsole';
+// const vConsole = new VConsole({ maxLogNumber: 1000 });
 class Options {
   constructor() {
     this.message = 'dat.gui';

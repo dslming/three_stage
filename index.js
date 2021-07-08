@@ -40,8 +40,8 @@ export default class Stage {
     this.renderer.setClearColor(0x33334c, 1.0);
     // this.renderer.autoClear = true;
     this.renderer.setSize(vW, vH, false);
-    // this.renderer.setPixelRatio(window.devicePixelRatio);
-    console.error(vW, vH);
+    this.renderer.setPixelRatio(window.devicePixelRatio);
+    // console.error(vW, vH);
 
     this.containerEle.appendChild(this.renderer.domElement);
     this.camera = new THREE.PerspectiveCamera(45, 1, 0.01, 1000)
