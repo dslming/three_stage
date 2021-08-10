@@ -4,7 +4,19 @@ import OrbitControls from './camera-control/MyOrbitControls'
 import Stats from 'three/examples/jsm/libs/stats.module.js'
 
 export default class Stage {
+  /**
+   *
+   * @param {*} container
+   * @param {*} param
+   * @param {* } param.disableControl
+   * @param {* } param.cameraType "perspective" / "orthographi"
+   */
   constructor(container, param) {
+    this.mouse = new THREE.Vector2()
+    this.raycaster = new THREE.Raycaster();
+
+    param = param || {}
+    param.cameraType = param.cameraType || "perspective"
     this.fuArr = []
     this.viceCamera = null
     this.tmpTarget = new THREE.Vector3()
@@ -33,7 +45,7 @@ export default class Stage {
     let vH = this.containerEle.clientHeight;
     this.renderer = new THREE.WebGLRenderer({
       antialias: true,
-      // alpha: false,
+      alpha: false,
       // preserveDrawingBuffer: true,
       // failIfMajorPerformanceCaveat: true,
     });
@@ -44,7 +56,11 @@ export default class Stage {
     // console.error(vW, vH);
 
     this.containerEle.appendChild(this.renderer.domElement);
-    this.camera = new THREE.PerspectiveCamera(45, 1, 0.01, 1000)
+    if (param.cameraType == "perspective") {
+      this.camera = new THREE.PerspectiveCamera(45, 1, 0.01, 1000)
+    } else if (param.cameraType == "orthographi") {
+      this.camera = new THREE.OrthographicCamera(-vW / 2, vW / 2, -vH / 2, vH / 2, 0.1, 10000)
+    }
 
     this.camera.lookAt(0, 0, 0)
     this.camera.name = "camera";
@@ -52,6 +68,15 @@ export default class Stage {
     this.handleResize = this.handleResize.bind(this)
     this._loop = this._loop.bind(this)
     window.addEventListener("resize", this.handleResize);
+
+    // window.addEventListener("pointerdown", (event) => {
+    //   this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    //   this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    //   this.raycaster.setFromCamera(this.mouse, this.camera)
+    //   const intersects = this.raycaster.intersectObjects(this.scene.children);
+    //   console.error(intersects[0].point);
+
+    // });
     this.handleResize();
     if (param && param.disableControl) {
 

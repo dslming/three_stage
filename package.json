@@ -1,6 +1,6 @@
 {
   "name": "three_stage",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "three.js 基本场景搭建。",
   "main": "index.js",
   "scripts": {
