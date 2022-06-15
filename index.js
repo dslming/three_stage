@@ -8,8 +8,9 @@ export default class Stage {
    *
    * @param {*} container
    * @param {*} param
-   * @param {* } param.disableControl
+   * @param {* } param.disableControl 禁用默认控制器
    * @param {* } param.cameraType "perspective" / "orthographi"
+   * @param {* } param.axisHelper
    */
   constructor(container, param) {
     this.mouse = new THREE.Vector2()
@@ -85,8 +86,10 @@ export default class Stage {
     }
     this.camera.position.set(0, 0, 50)
 
-    let axis = new THREE.AxesHelper(10000);
-    this.scene.add(axis);
+    if (param.axisHelper !== false) {
+      let axis = new THREE.AxesHelper(10000);
+      this.scene.add(axis);
+    }
 
     this.stats = new Stats();
     this.stats.domElement.style.position = 'absolute';

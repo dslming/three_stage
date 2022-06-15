@@ -10,6 +10,9 @@ export default class MyOrbitControls {
     this.camera = camera
     this.domElement = domElement
     this.target = new THREE.Vector3(0, 0, 0)
+    this.enableZoom = true;
+    this.enablePan = true;
+    this.enableRotate = true;
 
     // 事件对应的处理动作
     this.mouseButtons = {
@@ -80,9 +83,9 @@ export default class MyOrbitControls {
     this.domElement.removeEventListener('contextmenu', this.onContextMenu);
     this.domElement.removeEventListener('wheel', this.onWheel);
 
-     this.domElement.removeEventListener('touchstart', this.onTouchStart);
-     this.domElement.removeEventListener('touchend', this.onTouchEnd);
-     this.domElement.removeEventListener('touchmove', this.onTouchMove);
+    this.domElement.removeEventListener('touchstart', this.onTouchStart);
+    this.domElement.removeEventListener('touchend', this.onTouchEnd);
+    this.domElement.removeEventListener('touchmove', this.onTouchMove);
   }
 
   onWheel(event) {
@@ -130,7 +133,7 @@ export default class MyOrbitControls {
 
       case 1:
         mouseAction = this.mouseButtons.MIDDLE;
-      break;
+        break;
 
       case 2:
         mouseAction = this.mouseButtons.RIGHT
@@ -179,19 +182,19 @@ export default class MyOrbitControls {
 
   handleTouchStartPan(event) {
     if (event.touches.length == 1) {
-     this.pan.setPanStart(event.touches[0].pageX, event.touches[0].pageY);
+      this.pan.setPanStart(event.touches[0].pageX, event.touches[0].pageY);
     } else {
       var x = 0.5 * (event.touches[0].pageX + event.touches[1].pageX);
       var y = 0.5 * (event.touches[0].pageY + event.touches[1].pageY);
-     this.pan.setPanStart(x, y);
+      this.pan.setPanStart(x, y);
     }
   }
 
   handleTouchStartDolly(event) {
-    	var dx = event.touches[0].pageX - event.touches[1].pageX;
-    	var dy = event.touches[0].pageY - event.touches[1].pageY;
+    var dx = event.touches[0].pageX - event.touches[1].pageX;
+    var dy = event.touches[0].pageY - event.touches[1].pageY;
     var distance = Math.sqrt(dx * dx + dy * dy);
-    	this.dolly.setDollyStartForMobile(0, distance);
+    this.dolly.setDollyStartForMobile(0, distance);
   }
 
   handleTouchMoveDolly(event) {
@@ -288,49 +291,57 @@ export default class MyOrbitControls {
   }
 
   handleTouchMovePan(event) {
-		if (event.touches.length == 1) {
-		  this.pan.setPanEnd(event.touches[0].pageX, event.touches[0].pageY);
-		} else {
-		  var x = 0.5 * (event.touches[0].pageX + event.touches[1].pageX);
-		  var y = 0.5 * (event.touches[0].pageY + event.touches[1].pageY);
-		  this.pan.setPanEnd(x, y);
-		}
+    if (event.touches.length == 1) {
+      this.pan.setPanEnd(event.touches[0].pageX, event.touches[0].pageY);
+    } else {
+      var x = 0.5 * (event.touches[0].pageX + event.touches[1].pageX);
+      var y = 0.5 * (event.touches[0].pageY + event.touches[1].pageY);
+      this.pan.setPanEnd(x, y);
+    }
   }
 
   onTouchMove(event) {
     event.preventDefault(); // prevent scrolling
     event.stopPropagation();
 
-    	switch (this.state) {
-    	  case STATE.TOUCH_ROTATE:
-    	    if (this.enableRotate === false) return;
-    	    this.handleTouchMoveRotate(event);
-    	    this.update();
-    	    break;
+    switch (this.state) {
+      case STATE.TOUCH_ROTATE:
+        if (this.enableRotate === false) return;
+        this.handleTouchMoveRotate(event);
+        this.update();
+        break;
 
-    	  case STATE.TOUCH_PAN:
-    	    this.handleTouchMovePan(event);
-    	    this.update();
-    	    break;
+      case STATE.TOUCH_PAN:
+        this.handleTouchMovePan(event);
+        this.update();
+        break;
 
-    	  case STATE.TOUCH_DOLLY_PAN:
-    	    this.handleTouchMoveDollyPan(event);
-    	    this.update();
-    	    break;
+      case STATE.TOUCH_DOLLY_PAN:
+        this.handleTouchMoveDollyPan(event);
+        this.update();
+        break;
 
-    	  case STATE.TOUCH_DOLLY_ROTATE:
-    	    this.handleTouchMoveDollyRotate(event);
-    	    this.update();
-    	    break;
+      case STATE.TOUCH_DOLLY_ROTATE:
+        this.handleTouchMoveDollyRotate(event);
+        this.update();
+        break;
 
-    	  default:
-    	    this.state = STATE.NONE;
-    	}
+      default:
+        this.state = STATE.NONE;
+    }
   }
 
   update() {
-    this.pan.update()
-    this.dolly.update()
-    this.rotation.update()
+    if (this.enablePan) {
+      this.pan.update()
+    }
+
+    if (this.enableZoom) {
+      this.dolly.update()
+    }
+
+    if (this.enableRotate) {
+      this.rotation.update()
+    }
   }
 }
