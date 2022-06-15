@@ -153,9 +153,10 @@ export default class Stage {
   }
 
   _loop() {
-    this.stats.update()
     this.camera.updateProjectionMatrix();
-    this.camera.updateMatrixWorld()
+    this.camera.updateMatrixWorld();
+
+    this.stats && this.stats.update();
     this.state && this.renderer.render(this.scene, this.camera);
 
     this.fuArr.forEach(fun => {
