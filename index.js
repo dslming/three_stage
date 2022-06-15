@@ -91,14 +91,15 @@ export default class Stage {
       this.scene.add(axis);
     }
 
-    this.stats = new Stats();
-    this.stats.domElement.style.position = 'absolute';
-    this.stats.domElement.style.left = '0px';
-    this.stats.domElement.style.top = '0px';
-    this.stats.domElement.style.width = '100px';
-    this.stats.domElement.id = 'stats';
-    this.containerEle.appendChild(this.stats.dom);
-
+    if (param.stats !== false) {
+      this.stats = new Stats();
+      this.stats.domElement.style.position = 'absolute';
+      this.stats.domElement.style.left = '0px';
+      this.stats.domElement.style.top = '0px';
+      this.stats.domElement.style.width = '100px';
+      this.stats.domElement.id = 'stats';
+      this.containerEle.appendChild(this.stats.dom);
+    }
     this.state = true
   }
 
