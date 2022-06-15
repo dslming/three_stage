@@ -89,7 +89,9 @@ export default class MyOrbitControls {
   }
 
   onWheel(event) {
-    const { deltaY } = event
+    if (!this.enableZoom) return;
+
+    const { deltaY } = event;
     this.dolly.handlePC(deltaY)
   }
 
@@ -336,9 +338,7 @@ export default class MyOrbitControls {
       this.pan.update()
     }
 
-    if (this.enableZoom) {
-      this.dolly.update()
-    }
+    this.dolly.update()
 
     if (this.enableRotate) {
       this.rotation.update()
